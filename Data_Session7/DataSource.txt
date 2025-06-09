@@ -1,0 +1,2 @@
+The data used in Session 7, "dataPM25.csv", are from the book "Geospatial Health Data: Modeling and Visualization with R-INLA and Shiny"
+by Paula Moraga, freely available at the link: https://www.paulamoraga.com/book-geospatial/index.html
