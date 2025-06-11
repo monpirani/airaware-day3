@@ -466,22 +466,25 @@ $ date      &lt;date&gt; 2006-07-01, 2006-07-02, 2006-07-03, 2006-07-04, 2006-07
 <div class="cell">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">23</span>)</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare fold assignment: we use 's.index' as sesonr ID</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>stations <span class="ot">&lt;-</span> <span class="fu">unique</span>(nysptime<span class="sc">$</span>s.index)</span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>folds <span class="ot">&lt;-</span> <span class="fu">cut</span>(<span class="fu">seq_along</span>(stations), <span class="at">breaks =</span> <span class="dv">5</span>, <span class="at">labels =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>station_folds <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">s.index =</span> stations,</span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>                            <span class="at">fold =</span> <span class="fu">sample</span>(folds))</span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove previous 'fold' column if it exists</span></span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="st">"fold"</span> <span class="sc">%in%</span> <span class="fu">names</span>(nysptime)) {</span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  nysptime<span class="sc">$</span>fold <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
-<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Now merge fold assignment back into main dataset</span></span>
-<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>nysptime <span class="ot">&lt;-</span> <span class="fu">merge</span>(nysptime, station_folds, <span class="at">by =</span> <span class="st">"s.index"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare fold assignment: we use 's.index' as sesonr ID:</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Extracts the unique station identifiers from the column s.index</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>stations <span class="ot">&lt;-</span> <span class="fu">unique</span>(nysptime<span class="sc">$</span>s.index)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="co">#  Divides the stations into 5 roughly equal-sized groups (i.e. folds)</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>folds <span class="ot">&lt;-</span> <span class="fu">cut</span>(<span class="fu">seq_along</span>(stations), <span class="at">breaks =</span> <span class="dv">5</span>, <span class="at">labels =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>station_folds <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">s.index =</span> stations,</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>                            <span class="at">fold =</span> <span class="fu">sample</span>(folds)) <span class="co"># sample randomly shuffles the fold labels</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove previous 'fold' column if it exists</span></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="st">"fold"</span> <span class="sc">%in%</span> <span class="fu">names</span>(nysptime)) {</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>  nysptime<span class="sc">$</span>fold <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Now merge fold assignment back into main dataset</span></span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>nysptime <span class="ot">&lt;-</span> <span class="fu">merge</span>(nysptime, station_folds, <span class="at">by =</span> <span class="st">"s.index"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Now, we initialize the vectors to store performance metrics: root mean sqyared error (RMSE), mean absolute error (MAE), Bias, the coefficient of correlation between observed and predicted and the squared coefficient of correlation:</p>
+<p>Note: in the previous code, we divide the vector of stations into 5 roughly equal-sized groups (folds). In particular, <code>seq_along(stations)</code> gives the sequence <code>1, 2, ..., number_of_stations</code>, <code>cut(..., breaks = 5)</code> splits that sequence into 5 intervals and <code>labels = FALSE</code> returns numeric labels (1 to 5) for the fold IDs.</p>
+<p>Now, we initialize the vectors to store performance metrics: root mean squared error (RMSE), mean absolute error (MAE), Bias, the coefficient of correlation between observed and predicted and the squared coefficient of correlation:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>rmse_vec <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>mae_vec <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
@@ -530,7 +533,7 @@ $ date      &lt;date&gt; 2006-07-01, 2006-07-02, 2006-07-03, 2006-07-04, 2006-07
 <span id="cb27-36"><a href="#cb27-36" aria-hidden="true" tabindex="-1"></a>                        <span class="at">group =</span> training.data<span class="sc">$</span>time,</span>
 <span id="cb27-37"><a href="#cb27-37" aria-hidden="true" tabindex="-1"></a>                        <span class="at">n.group =</span> n_days)</span>
 <span id="cb27-38"><a href="#cb27-38" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb27-39"><a href="#cb27-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Build ithe syack for the estimation part</span></span>
+<span id="cb27-39"><a href="#cb27-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Build ithe stack for the estimation part</span></span>
 <span id="cb27-40"><a href="#cb27-40" aria-hidden="true" tabindex="-1"></a>stk_est <span class="ot">=</span> <span class="fu">inla.stack</span>(</span>
 <span id="cb27-41"><a href="#cb27-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">list</span>(<span class="at">y =</span> training.data<span class="sc">$</span>sqrty8hrmax),</span>
 <span id="cb27-42"><a href="#cb27-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">A =</span> <span class="fu">list</span>(A_train, <span class="dv">1</span>),</span>
@@ -562,10 +565,10 @@ $ date      &lt;date&gt; 2006-07-01, 2006-07-02, 2006-07-03, 2006-07-04, 2006-07
 <span id="cb27-68"><a href="#cb27-68" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">list</span>(validation.data[,<span class="dv">10</span><span class="sc">:</span><span class="dv">12</span>])),</span>
 <span id="cb27-69"><a href="#cb27-69" aria-hidden="true" tabindex="-1"></a>    <span class="at">tag=</span><span class="st">"pred"</span>)</span>
 <span id="cb27-70"><a href="#cb27-70" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb27-71"><a href="#cb27-71" aria-hidden="true" tabindex="-1"></a><span class="co"># Final stack containing the estimation and prediction stacks</span></span>
+<span id="cb27-71"><a href="#cb27-71" aria-hidden="true" tabindex="-1"></a><span class="co"># Final stack joining the estimation and prediction stacks</span></span>
 <span id="cb27-72"><a href="#cb27-72" aria-hidden="true" tabindex="-1"></a>stk <span class="ot">=</span> <span class="fu">inla.stack</span>(stk_est, stk_pred)</span>
 <span id="cb27-73"><a href="#cb27-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-74"><a href="#cb27-74" aria-hidden="true" tabindex="-1"></a><span class="co"># Prior for rho parameter</span></span>
+<span id="cb27-74"><a href="#cb27-74" aria-hidden="true" tabindex="-1"></a><span class="co"># Prior for rho parameter of AR1</span></span>
 <span id="cb27-75"><a href="#cb27-75" aria-hidden="true" tabindex="-1"></a>rho_hyper <span class="ot">=</span> <span class="fu">list</span>(<span class="at">theta =</span> <span class="fu">list</span>(<span class="at">prior =</span> <span class="st">"pccor1"</span>, <span class="at">param =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.9</span>)))</span>
 <span id="cb27-76"><a href="#cb27-76" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb27-77"><a href="#cb27-77" aria-hidden="true" tabindex="-1"></a><span class="co"># Define model formula</span></span>
@@ -577,7 +580,7 @@ $ date      &lt;date&gt; 2006-07-01, 2006-07-02, 2006-07-03, 2006-07-04, 2006-07
 <span id="cb27-83"><a href="#cb27-83" aria-hidden="true" tabindex="-1"></a>                           <span class="at">hyper=</span>rho_hyper))</span>
 <span id="cb27-84"><a href="#cb27-84" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb27-85"><a href="#cb27-85" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb27-86"><a href="#cb27-86" aria-hidden="true" tabindex="-1"></a><span class="co"># Run INLA again for prediction at validation locations </span></span>
+<span id="cb27-86"><a href="#cb27-86" aria-hidden="true" tabindex="-1"></a><span class="co"># Run INLA for prediction at validation locations </span></span>
 <span id="cb27-87"><a href="#cb27-87" aria-hidden="true" tabindex="-1"></a>result_valid <span class="ot">=</span> <span class="fu">inla</span>(</span>
 <span id="cb27-88"><a href="#cb27-88" aria-hidden="true" tabindex="-1"></a>    formula.cv,</span>
 <span id="cb27-89"><a href="#cb27-89" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">inla.stack.data</span>(stk, <span class="at">spde =</span> spde),</span>
@@ -593,8 +596,8 @@ $ date      &lt;date&gt; 2006-07-01, 2006-07-02, 2006-07-03, 2006-07-04, 2006-07
 <span id="cb27-99"><a href="#cb27-99" aria-hidden="true" tabindex="-1"></a>  obs  <span class="ot">&lt;-</span> validation.data<span class="sc">$</span>sqrty8hrmax</span>
 <span id="cb27-100"><a href="#cb27-100" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb27-101"><a href="#cb27-101" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the performace metrics</span></span>
-<span id="cb27-102"><a href="#cb27-102" aria-hidden="true" tabindex="-1"></a>  rmse_vec[i] <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((obs <span class="sc">-</span> pred)<span class="sc">^</span><span class="dv">2</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb27-103"><a href="#cb27-103" aria-hidden="true" tabindex="-1"></a>  mae_vec[i]  <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">abs</span>(obs <span class="sc">-</span> pred), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb27-102"><a href="#cb27-102" aria-hidden="true" tabindex="-1"></a>  rmse_vec[i] <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((pred <span class="sc">-</span> obs)<span class="sc">^</span><span class="dv">2</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb27-103"><a href="#cb27-103" aria-hidden="true" tabindex="-1"></a>  mae_vec[i]  <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">abs</span>(pred <span class="sc">-</span> obs), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb27-104"><a href="#cb27-104" aria-hidden="true" tabindex="-1"></a>  bias_vec[i] <span class="ot">&lt;-</span> <span class="fu">mean</span>(pred <span class="sc">-</span> obs, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb27-105"><a href="#cb27-105" aria-hidden="true" tabindex="-1"></a>  r_vec[i]    <span class="ot">&lt;-</span> <span class="fu">cor</span>(pred, obs, <span class="at">use =</span> <span class="st">"complete.obs"</span>)</span>
 <span id="cb27-106"><a href="#cb27-106" aria-hidden="true" tabindex="-1"></a>  rsq_vec[i]  <span class="ot">&lt;-</span> r_vec[i]<span class="sc">^</span><span class="dv">2</span></span>
@@ -610,25 +613,25 @@ Fold 5 </code></pre>
 <p>Finally we print the performance metrics!</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Print average performance across folds</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Mean RMSE:"</span>, <span class="fu">round</span>(<span class="fu">mean</span>(rmse_vec), <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"RMSE:"</span>, <span class="fu">round</span>(<span class="fu">mean</span>(rmse_vec), <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Mean RMSE: 0.456 </code></pre>
+<pre><code>RMSE: 0.456 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Mean MAE:"</span>,  <span class="fu">round</span>(<span class="fu">mean</span>(mae_vec), <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"MAE:"</span>,  <span class="fu">round</span>(<span class="fu">mean</span>(mae_vec), <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Mean MAE: 0.363 </code></pre>
+<pre><code>MAE: 0.363 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Mean Bias:"</span>, <span class="fu">round</span>(<span class="fu">mean</span>(bias_vec), <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Bias:"</span>, <span class="fu">round</span>(<span class="fu">mean</span>(bias_vec), <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Mean Bias: -0.031 </code></pre>
+<pre><code>Bias: -0.031 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Mean R:"</span>,    <span class="fu">round</span>(<span class="fu">mean</span>(r_vec), <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"R:"</span>,    <span class="fu">round</span>(<span class="fu">mean</span>(r_vec), <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Mean R: 0.873 </code></pre>
+<pre><code>R: 0.873 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Mean R²:"</span>,   <span class="fu">round</span>(<span class="fu">mean</span>(rsq_vec), <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"R²:"</span>,   <span class="fu">round</span>(<span class="fu">mean</span>(rsq_vec), <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Mean R²: 0.763 </code></pre>
+<pre><code>R²: 0.763 </code></pre>
 </div>
 </div>
 </section>
@@ -856,10 +859,10 @@ $ time      &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1
 <div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Time used:
-    Pre = 0.407, Running = 34.8, Post = 17.1, Total = 52.4 
+    Pre = 2.52, Running = 134, Post = 24.2, Total = 161 
 Fixed effects:
             mean    sd 0.025quant 0.5quant 0.975quant   mode kld
-Intercept  1.001 1.319     -1.573    0.995      3.611  0.995   0
+Intercept  1.001 1.319     -1.574    0.994      3.611  0.994   0
 xmaxtemp   0.223 0.036      0.151    0.223      0.294  0.223   0
 xwdsp      0.053 0.032     -0.010    0.053      0.116  0.053   0
 xrh       -0.078 0.107     -0.288   -0.078      0.132 -0.078   0
@@ -870,17 +873,17 @@ Random effects:
 
 Model hyperparameters:
                                           mean    sd 0.025quant 0.5quant
-Precision for the Gaussian observations 12.825 1.231     10.575   12.766
-Range for spatial.field                  2.915 0.351      2.295    2.890
-Stdev for spatial.field                  0.966 0.109      0.777    0.957
-GroupRho for spatial.field               0.799 0.048      0.695    0.803
+Precision for the Gaussian observations 12.823 1.230     10.575   12.763
+Range for spatial.field                  2.916 0.351      2.295    2.891
+Stdev for spatial.field                  0.966 0.109      0.777    0.958
+GroupRho for spatial.field               0.799 0.048      0.694    0.803
                                         0.975quant   mode
-Precision for the Gaussian observations     15.417 12.646
-Range for spatial.field                      3.676  2.835
-Stdev for spatial.field                      1.205  0.935
+Precision for the Gaussian observations     15.415 12.642
+Range for spatial.field                      3.676  2.838
+Stdev for spatial.field                      1.205  0.936
 GroupRho for spatial.field                   0.883  0.809
 
-Marginal log-Likelihood:  -608.42 
+Marginal log-Likelihood:  -608.41 
  is computed 
 Posterior summaries for the linear predictor and the fitted values are computed
 (Posterior marginals needs also 'control.compute=list(return.marginals.predictor=TRUE)')</code></pre>
@@ -914,7 +917,7 @@ Posterior summaries for the linear predictor and the fitted values are computed
 <span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(fit<span class="sc">$</span>summary.fixed[,<span class="fu">c</span>(<span class="st">"mean"</span>,<span class="st">"0.025quant"</span>,<span class="st">"0.975quant"</span>)],<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>            mean 0.025quant 0.975quant
-Intercept  1.001     -1.573      3.611
+Intercept  1.001     -1.574      3.611
 xmaxtemp   0.223      0.151      0.294
 xwdsp      0.053     -0.010      0.116
 xrh       -0.078     -0.288      0.132</code></pre>
@@ -930,16 +933,16 @@ xrh       -0.078     -0.288      0.132</code></pre>
 <span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>modfix</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>                 mean         sd  0.025quant    0.5quant 0.975quant        mode
-Intercept  1.00116051 1.31873540 -1.57253452  0.99485642  3.6110997  0.99496469
-xmaxtemp   0.22281345 0.03645619  0.15059430  0.22302163  0.2938407  0.22301966
-xwdsp      0.05329022 0.03192028 -0.00977121  0.05342221  0.1156041  0.05342317
-xrh       -0.07785969 0.10684724 -0.28758460 -0.07792685  0.1322323 -0.07793098
-                   kld
-Intercept 1.413764e-08
-xmaxtemp  1.352616e-08
-xwdsp     7.931920e-09
-xrh       6.456615e-09</code></pre>
+<pre><code>                 mean         sd   0.025quant    0.5quant 0.975quant
+Intercept  1.00065048 1.31912441 -1.573769623  0.99433127  3.6114001
+xmaxtemp   0.22283462 0.03646524  0.150595769  0.22304344  0.2938779
+xwdsp      0.05325736 0.03192527 -0.009812942  0.05338909  0.1155818
+xrh       -0.07782577 0.10686994 -0.287596904 -0.07789252  0.1323096
+                 mode          kld
+Intercept  0.99443922 1.415284e-08
+xmaxtemp   0.22304147 1.356378e-08
+xwdsp      0.05339011 7.903901e-09
+xrh       -0.07789674 6.455554e-09</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mgp=</span><span class="fu">c</span>(<span class="fl">2.2</span>,<span class="fl">0.45</span>,<span class="dv">0</span>), <span class="at">tcl=</span><span class="sc">-</span><span class="fl">0.4</span>, <span class="at">mar=</span><span class="fu">c</span>(<span class="fl">3.3</span>,<span class="dv">4</span>,<span class="dv">2</span>,<span class="dv">2</span>))</span>
 <span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -972,15 +975,15 @@ xrh       6.456615e-09</code></pre>
 <span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a>modhy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                                              mean         sd 0.025quant
-Precision for the Gaussian observations 12.8248846 1.23089087 10.5749026
-Range for spatial.field                  2.9146406 0.35108202  2.2952407
-Stdev for spatial.field                  0.9659951 0.10873459  0.7774822
-GroupRho for spatial.field               0.7992096 0.04808633  0.6948142
+Precision for the Gaussian observations 12.8227550 1.23037414 10.5749334
+Range for spatial.field                  2.9155375 0.35118646  2.2949346
+Stdev for spatial.field                  0.9661545 0.10900342  0.7767169
+GroupRho for spatial.field               0.7991626 0.04824939  0.6941179
                                           0.5quant 0.975quant       mode
-Precision for the Gaussian observations 12.7655072 15.4167419 12.6463022
-Range for spatial.field                  2.8901974  3.6756229  2.8351177
-Stdev for spatial.field                  0.9573966  1.2048430  0.9351710
-GroupRho for spatial.field               0.8029473  0.8826979  0.8086205</code></pre>
+Precision for the Gaussian observations 12.7629842 15.4147587 12.6421434
+Range for spatial.field                  2.8914221  3.6757205  2.8376417
+Stdev for spatial.field                  0.9576731  1.2051779  0.9360226
+GroupRho for spatial.field               0.8030018  0.8826634  0.8089886</code></pre>
 </div>
 </div>
 <ul>
@@ -1029,7 +1032,7 @@ GroupRho for spatial.field               0.8029473  0.8826979  0.8086205</code><
 <span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a><span class="co"># correlation between the data response and the posterior mean of the predicted values </span></span>
 <span id="cb82-5"><a href="#cb82-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(nysptime<span class="sc">$</span>sqrty8hrmax, fit<span class="sc">$</span>summary.linear.predictor<span class="sc">$</span>mean[idat], <span class="at">use=</span><span class="st">"complete.obs"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.9747155</code></pre>
+<pre><code>[1] 0.9747077</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
 <span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(nysptime<span class="sc">$</span>sqrty8hrmax, fit<span class="sc">$</span>summary.linear.predictor<span class="sc">$</span>mean[idat])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>

@@ -249,12 +249,14 @@ We ensure that all measurements from the same sensor (`s.index`) belong to the s
 ```{r}
 set.seed(23)
 
-# Prepare fold assignment: we use 's.index' as sesonr ID
+# Prepare fold assignment: we use 's.index' as sesonr ID:
+# Extracts the unique station identifiers from the column s.index
 stations <- unique(nysptime$s.index)
+
+#  Divides the stations into 5 roughly equal-sized groups (i.e. folds)
 folds <- cut(seq_along(stations), breaks = 5, labels = FALSE)
 station_folds <- data.frame(s.index = stations,
-                            fold = sample(folds))
-
+                            fold = sample(folds)) # sample randomly shuffles the fold labels
 
 # Remove previous 'fold' column if it exists
 if ("fold" %in% names(nysptime)) {
@@ -265,7 +267,9 @@ if ("fold" %in% names(nysptime)) {
 nysptime <- merge(nysptime, station_folds, by = "s.index")
 ```
 
-Now, we initialize the vectors to store performance metrics: root mean sqyared error (RMSE), mean absolute error (MAE), Bias, the coefficient of correlation between observed and predicted and the squared coefficient of correlation:
+Note: in the previous code, we divide the vector of stations into 5 roughly equal-sized groups (folds). In particular, `seq_along(stations)` gives the sequence `1, 2, ..., number_of_stations`, `cut(..., breaks = 5)` splits that sequence into 5 intervals and `labels = FALSE` returns numeric labels (1 to 5) for the fold IDs.
+
+Now, we initialize the vectors to store performance metrics: root mean squared error (RMSE), mean absolute error (MAE), Bias, the coefficient of correlation between observed and predicted and the squared coefficient of correlation:
 
 ```{r}
 
@@ -319,7 +323,7 @@ A_train = inla.spde.make.A(mesh = mesh,
                         group = training.data$time,
                         n.group = n_days)
   
-# Build ithe syack for the estimation part
+# Build ithe stack for the estimation part
 stk_est = inla.stack(
     data = list(y = training.data$sqrty8hrmax),
     A = list(A_train, 1),
@@ -351,10 +355,10 @@ stk_pred = inla.stack(
                  list(validation.data[,10:12])),
     tag="pred")
   
-# Final stack containing the estimation and prediction stacks
+# Final stack joining the estimation and prediction stacks
 stk = inla.stack(stk_est, stk_pred)
 
-# Prior for rho parameter
+# Prior for rho parameter of AR1
 rho_hyper = list(theta = list(prior = "pccor1", param = c(0, 0.9)))
     
 # Define model formula
@@ -366,7 +370,7 @@ formula.cv = y ~ -1 + Intercept + xmaxtemp + xwdsp + xrh +
                            hyper=rho_hyper))
   
  
-# Run INLA again for prediction at validation locations 
+# Run INLA for prediction at validation locations 
 result_valid = inla(
     formula.cv,
     data = inla.stack.data(stk, spde = spde),
@@ -382,8 +386,8 @@ result_valid = inla(
   obs  <- validation.data$sqrty8hrmax
   
 # Compute the performace metrics
-  rmse_vec[i] <- sqrt(mean((obs - pred)^2, na.rm = TRUE))
-  mae_vec[i]  <- mean(abs(obs - pred), na.rm = TRUE)
+  rmse_vec[i] <- sqrt(mean((pred - obs)^2, na.rm = TRUE))
+  mae_vec[i]  <- mean(abs(pred - obs), na.rm = TRUE)
   bias_vec[i] <- mean(pred - obs, na.rm = TRUE)
   r_vec[i]    <- cor(pred, obs, use = "complete.obs")
   rsq_vec[i]  <- r_vec[i]^2
@@ -395,11 +399,11 @@ Finally we print the performance metrics!
 
 ```{r}
 # Print average performance across folds
-cat("Mean RMSE:", round(mean(rmse_vec), 3), "\n")
-cat("Mean MAE:",  round(mean(mae_vec), 3), "\n")
-cat("Mean Bias:", round(mean(bias_vec), 3), "\n")
-cat("Mean R:",    round(mean(r_vec), 3), "\n")
-cat("Mean R²:",   round(mean(rsq_vec), 3), "\n")
+cat("RMSE:", round(mean(rmse_vec), 3), "\n")
+cat("MAE:",  round(mean(mae_vec), 3), "\n")
+cat("Bias:", round(mean(bias_vec), 3), "\n")
+cat("R:",    round(mean(r_vec), 3), "\n")
+cat("R²:",   round(mean(rsq_vec), 3), "\n")
 ```
 
 ## Exercise
